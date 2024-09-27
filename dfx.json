@@ -1,0 +1,17 @@
+{
+  "canisters": {
+    "like_ERC20_backend": {
+      "candid": "src/like_ERC20_backend/like_ERC20_backend.did",
+      "package": "like_ERC20_backend",
+      "type": "rust"
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": ""
+    }
+  },
+  "output_env_file": ".env",
+  "version": 1
+}
