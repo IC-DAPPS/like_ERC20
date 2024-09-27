@@ -1,5 +1,5 @@
 [package]
-name = "like_ERC20_backend"
+name = "like_erc20_backend"
 version = "0.1.0"
 edition = "2021"
 
@@ -11,4 +11,6 @@ crate-type = ["cdylib"]
 [dependencies]
 candid = "0.10"
 ic-cdk = "0.16"
-ic-cdk-timers = "0.10" # Feel free to remove this dependency if you don't need timers
+ic-cdk-macros = "0.8"
+serde = "1.0"
+serde_derive = "1.0"

@@ -1,9 +1,14 @@
 {
   "canisters": {
-    "like_ERC20_backend": {
-      "candid": "src/like_ERC20_backend/like_ERC20_backend.did",
-      "package": "like_ERC20_backend",
+    "like_erc20_backend": {
+      "candid": "src/like_erc20_backend/like_erc20_backend.did",
+      "package": "like_erc20_backend",
       "type": "rust"
+    },
+    "ledger": {
+      "type": "custom",
+      "candid": "https://raw.githubusercontent.com/dfinity/ic/5ba1412f9175d987661ae3c0d8dbd1ac3e092b7d/rs/rosetta-api/icrc1/ledger/ledger.did",
+      "wasm": "https://download.dfinity.systems/ic/5ba1412f9175d987661ae3c0d8dbd1ac3e092b7d/canisters/ic-icrc1-ledger.wasm.gz"
     }
   },
   "defaults": {

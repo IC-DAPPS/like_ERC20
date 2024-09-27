@@ -1,0 +1,17 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.53s
+     Running unittests src/lib.rs (target/debug/deps/like_erc20_backend-02426eeca097986e)
+
+running 1 test
+test generate_candid ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+Generating type declarations for canister like_erc20_backend:
+  /home/vishnulinux/ic-projects/like_ERC20/src/declarations/like_erc20_backend/like_erc20_backend.did.d.ts
+  /home/vishnulinux/ic-projects/like_ERC20/src/declarations/like_erc20_backend/like_erc20_backend.did.js
+  /home/vishnulinux/ic-projects/like_ERC20/src/declarations/like_erc20_backend/like_erc20_backend.did
+Building canisters...
+WARN: .did file for canister 'ledger' does not exist.
+WARN: Cannot check for vulnerabilities in rust canisters because cargo-audit is not installed. Please run 'cargo install cargo-audit' so that vulnerabilities can be detected.
+Executing: cargo build --target wasm32-unknown-unknown --release -p like_erc20_backend --locked
+    Finished `release` profile [optimized] target(s) in 0.29s

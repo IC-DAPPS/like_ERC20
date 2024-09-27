@@ -1,0 +1,11 @@
+type Result = variant { Ok; Err : text };
+service : (nat) -> {
+  allowance : (principal, principal) -> (nat) query;
+  approve : (principal, principal, nat) -> (Result);
+  balance_of : (principal) -> (nat) query;
+  burn : (principal, nat) -> (Result);
+  max_supply : () -> (nat) query;
+  mint : (principal, nat) -> (Result);
+  total_supply : () -> (nat) query;
+  transfer : (principal, principal, nat) -> (Result);
+}
