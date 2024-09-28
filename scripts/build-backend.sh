@@ -12,17 +12,17 @@ if [[ ! -d $DIR/logs ]]; then
 fi
 
 # Generate and copy did
-echo "Generating Candid interface ke liye"
+echo "Generating Candid interface"
 cargo test -p like_erc20_backend generate_candid \
     > $DIR/logs/build-backend.log 2>&1
 
 # Run dfx generate
-echo "Running dfx generate kar rahe hain"
+echo "Running dfx generate"
 dfx generate like_erc20_backend \
     >> $DIR/logs/build-backend.log 2>&1
 
 # Build wasm
-echo "Building wasm ho raha hai"
+echo "Building wasm"
 
 BUILD_DIR="target/wasm32-unknown-unknown/release"
 
@@ -35,7 +35,7 @@ mkdir -p src/distributed/like_erc20_backend
 # Copy and compress wasm
 gzip --best -c $BUILD_DIR/like_erc20_backend.wasm > src/distributed/like_erc20_backend/like_erc20_backend.wasm.gz
 
-echo "Build OK ho gaya!"
+echo "Build completed successfully!"
 
-echo "Agar koi error aaya toh, yeh dekho:"
+echo "If any errors occurred, check the log file:"
 cat $DIR/logs/build-backend.log

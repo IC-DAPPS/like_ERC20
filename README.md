@@ -1,61 +1,93 @@
-# `like_ERC20`
+Here’s the provided text in markdown format:
 
-Welcome to your new `like_ERC20` project and to the Internet Computer development community. By default, creating a new project adds this README and some template files to your project directory. You can edit these template files to customize your project and to include your own code to speed up the development cycle.
+```md
+# Like ERC20 Token Project on Internet Computer
 
-To get started, you might want to explore the project directory structure and the default configuration file. Working with this project in your development environment will not affect any production deployment or identity tokens.
+This project implements an ERC20-like token system on the Internet Computer (IC) platform. It includes a Rust-based backend canister that manages token operations and a local ledger for testing purposes.
 
-To learn more before you start working with `like_ERC20`, see the following documentation available online:
+## Prerequisites
 
-- [Quick Start](https://internetcomputer.org/docs/current/developer-docs/setup/deploy-locally)
-- [SDK Developer Tools](https://internetcomputer.org/docs/current/developer-docs/setup/install)
-- [Rust Canister Development Guide](https://internetcomputer.org/docs/current/developer-docs/backend/rust/)
-- [ic-cdk](https://docs.rs/ic-cdk)
-- [ic-cdk-macros](https://docs.rs/ic-cdk-macros)
-- [Candid Introduction](https://internetcomputer.org/docs/current/developer-docs/backend/candid/)
+Before you begin, ensure you have the following installed:
+- DFINITY Canister SDK (dfx)
+- Rust and Cargo
+- Node.js and npm
 
-If you want to start working on your project right away, you might want to try the following commands:
+## Getting Started
 
-```bash
-cd like_ERC20/
-dfx help
-dfx canister --help
+1. Clone the repository and navigate to the project directory:
+
+   ```
+   git clone https://github.com/your-username/like_ERC20.git
+   cd like_ERC20
+   ```
+
+2. Start the local Internet Computer replica:
+
+   ```
+   dfx start --clean
+   ```
+
+## Deployment
+
+The project includes two main deployment scripts:
+
+### 1. Deploy Local Ledger
+
+This script deploys the local ledger canister:
+```
+./scripts/deploy-local-ledger.sh
 ```
 
-## Running the project locally
+### 2. Deploy Backend
 
-If you want to test your project locally, you can use the following commands:
+This script builds and deploys the Like ERC20 backend canister:
 
-```bash
-# Starts the replica, running in the background
-dfx start --background
-
-# Deploys your canisters to the replica and generates your candid interface
-dfx deploy
+```
+./scripts/deploy-local.sh
 ```
 
-Once the job completes, your application will be available at `http://localhost:4943?canisterId={asset_canister_id}`.
+During deployment, you'll be prompted to enter an initialization argument for the maximum token supply.
 
-If you have made changes to your backend canister, you can generate a new candid interface with
+## Usage
 
-```bash
-npm run generate
+After deployment, you can interact with the canister using `dfx canister call` commands. Here are some example operations:
+
+1. Check maximum supply:
+   ```
+   dfx canister call like_erc20_backend max_supply
+   ```
+
+2. Mint tokens:
+   ```
+   dfx canister call like_erc20_backend mint '(principal "YOUR_PRINCIPAL_ID", 50)'
+   ```
+
+3. Check balance:
+   ```
+   dfx canister call like_erc20_backend balance_of '(principal "YOUR_PRINCIPAL_ID")'
+   ```
+
+4. Approve spending:
+   ```
+   dfx canister call like_erc20_backend approve '(principal "YOUR_PRINCIPAL_ID", principal "SPENDER_PRINCIPAL_ID", 20)'
+   ```
+
+5. Transfer tokens:
+   ```
+   dfx canister call like_erc20_backend transfer '(principal "FROM_PRINCIPAL_ID", principal "TO_PRINCIPAL_ID", 10)'
+   ```
+
+Replace `YOUR_PRINCIPAL_ID`, `SPENDER_PRINCIPAL_ID`, `FROM_PRINCIPAL_ID`, and `TO_PRINCIPAL_ID` with actual principal IDs.
+
+## Project Structure
+
+- `src/like_erc20_backend/`: Contains the Rust code for the backend canister
+- `scripts/`: Contains deployment and build scripts
+- `dfx.json`: Configuration file for the Internet Computer project
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
 ```
 
-at any time. This is recommended before starting the frontend development server, and will be run automatically any time you run `dfx deploy`.
-
-If you are making frontend changes, you can start a development server with
-
-```bash
-npm start
-```
-
-Which will start a server at `http://localhost:8080`, proxying API requests to the replica at port 4943.
-
-### Note on frontend environment variables
-
-If you are hosting frontend code somewhere without using DFX, you may need to make one of the following adjustments to ensure your project does not fetch the root key in production:
-
-- set`DFX_NETWORK` to `ic` if you are using Webpack
-- use your own preferred method to replace `process.env.DFX_NETWORK` in the autogenerated declarations
-  - Setting `canisters -> {asset_canister_id} -> declarations -> env_override to a string` in `dfx.json` will replace `process.env.DFX_NETWORK` with the string in the autogenerated declarations
-- Write your own `createActor` constructor
+You can use this markdown text as-is for documentation or sharing purposes!

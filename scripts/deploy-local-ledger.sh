@@ -1,6 +1,9 @@
 #########################################################################################
-########################### Deploy local USDx ledger canister ###########################
+########################### Deploy local ledger canister ###########################
 #########################################################################################
+
+# Create like_erc20_backend canister without initializing
+dfx canister create like_erc20_backend
 
 # The archive controller
 export ARCHIVE_CONTROLLER=$(dfx canister id like_erc20_backend)
