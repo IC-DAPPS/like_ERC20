@@ -52,8 +52,12 @@ fn max_supply() -> Nat {
 #[ic_cdk::update]
 fn mint(to: Principal, amount: Nat) -> Result<(), String> {
     TOKEN.with(|token| {
+        // token = RefCell { value: Token { total_supply: 1000, max_supply: 10000, accounts: HashMap { ... } } }
         let mut token = token.borrow_mut();
+        // token = Token { total_supply: 1000, max_supply: 10000, accounts: HashMap { ... } }
+        
         if token.total_supply.clone() + amount.clone() > token.max_supply {
+            // If 1000 + 500 > 10000 is not true, we continue
             return Err("Oops! We can't make more tokens than allowed".to_string());
         }
         let account = token.accounts.entry(to).or_insert_with(|| Account {
@@ -61,8 +65,14 @@ fn mint(to: Principal, amount: Nat) -> Result<(), String> {
             balance: Nat::from(0u64),
             allowances: HashMap::new(),
         });
+        // account = Account { owner: "Alice", balance: 200, allowances: {} }
+        
         account.balance += amount.clone();
+        // account.balance = 200 + 500 = 700
+        
         token.total_supply += amount;
+        // token.total_supply = 1000 + 500 = 1500
+        
         Ok(())
     })
 }
@@ -71,16 +81,26 @@ fn mint(to: Principal, amount: Nat) -> Result<(), String> {
 #[ic_cdk::update]
 fn burn(from: Principal, amount: Nat) -> Result<(), String> {
     TOKEN.with(|token| {
+        // token = RefCell { value: Token { total_supply: 1500, max_supply: 10000, accounts: HashMap { ... } } }
         let mut token = token.borrow_mut();
+        // token = Token { total_supply: 1500, max_supply: 10000, accounts: HashMap { ... } }
+        
         let account = token
             .accounts
             .get_mut(&from)
             .ok_or("Oops! We can't find this piggy bank")?;
+        // account = Account { owner: "Alice", balance: 700, allowances: {} }
+        
         if account.balance < amount {
+            // If 700 < 300 is not true, we continue
             return Err("Oops! Not enough tokens in the piggy bank".to_string());
         }
         account.balance -= amount.clone();
+        // account.balance = 700 - 300 = 400
+        
         token.total_supply -= amount;
+        // token.total_supply = 1500 - 300 = 1200
+        
         Ok(())
     })
 }
@@ -89,12 +109,19 @@ fn burn(from: Principal, amount: Nat) -> Result<(), String> {
 #[ic_cdk::update]
 fn approve(owner: Principal, spender: Principal, amount: Nat) -> Result<(), String> {
     TOKEN.with(|token| {
+        // token = RefCell { value: Token { total_supply: 1200, max_supply: 10000, accounts: HashMap { ... } } }
         let mut token = token.borrow_mut();
+        // token = Token { total_supply: 1200, max_supply: 10000, accounts: HashMap { ... } }
+        
         let account = token
             .accounts
             .get_mut(&owner)
             .ok_or("Oops! We can't find this piggy bank")?;
+        // account = Account { owner: "Alice", balance: 400, allowances: {} }
+        
         account.allowances.insert(spender, amount);
+        // account.allowances = { "Bob": 100 }
+        
         Ok(())
     })
 }
@@ -103,13 +130,17 @@ fn approve(owner: Principal, spender: Principal, amount: Nat) -> Result<(), Stri
 #[ic_cdk::query]
 fn allowance(owner: Principal, spender: Principal) -> Nat {
     TOKEN.with(|token| {
+        // token = RefCell { value: Token { total_supply: 1200, max_supply: 10000, accounts: HashMap { ... } } }
         let token = token.borrow();
+        // token = Token { total_supply: 1200, max_supply: 10000, accounts: HashMap { ... } }
+        
         token
             .accounts
             .get(&owner)
             .and_then(|account| account.allowances.get(&spender))
             .cloned()
             .unwrap_or_else(|| Nat::from(0u64))
+        // If "Alice" gave "Bob" permission to use 100 tokens, this will return 100
     })
 }
 
@@ -117,40 +148,41 @@ fn allowance(owner: Principal, spender: Principal) -> Nat {
 #[ic_cdk::update]
 fn transfer(from: Principal, to: Principal, amount: Nat) -> Result<(), String> {
     TOKEN.with(|token| {
+        // token = RefCell { value: Token { accounts: HashMap { ... } } }
+
         let mut token = token.borrow_mut();
+        /*
+        token = Token { accounts: HashMap {
+             "Alice": Account { owner: "Alice", balance: 100, allowances: {} },
+             "Bob": Account { owner: "Bob", balance: 50, allowances: {} }
+            } 
+         }
+         */
+
         let from_account = token
             .accounts
             .get_mut(&from)
-            .ok_or("Oops! We can't find the sender's piggy bank")?;
-
-        // Check if it's a direct transfer or through allowance
-        let caller = ic_cdk::caller();
-        if caller != from {
-            let allowance = from_account
-                .allowances
-                .get_mut(&caller)
-                .ok_or("Oops! You don't have permission to transfer")?;
-            if *allowance < amount {
-                return Err(
-                    "Oops! You don't have enough allowance to transfer this much".to_string(),
-                );
-            }
-            *allowance -= amount.clone();
-        } else if caller != ic_cdk::id() {
-            // Allow canister itself to make transfers without restrictions
-            return Err("Oops! You don't have permission to transfer".to_string());
-        }
+            .ok_or("Sender account not found")?;
+        // from_account = &mut Account { owner: "Alice", balance: 100, allowances: {} }
 
         if from_account.balance < amount {
-            return Err("Oops! Not enough tokens in the piggy bank".to_string());
+            // 100 < 30 ? False, so we continue
+            return Err("Insufficient balance".to_string());
         }
+
         from_account.balance -= amount.clone();
+        // from_account.balance = 100 - 30 = 70
+
         let to_account = token.accounts.entry(to).or_insert_with(|| Account {
             owner: to,
             balance: Nat::from(0u64),
             allowances: HashMap::new(),
         });
+        // to_account = &mut Account { owner: "Bob", balance: 50, allowances: {} }
+
         to_account.balance += amount;
+        // to_account.balance = 50 + 30 = 80
+
         Ok(())
     })
 }
@@ -158,19 +190,25 @@ fn transfer(from: Principal, to: Principal, amount: Nat) -> Result<(), String> {
 // This tells us how many tokens exist in total
 #[ic_cdk::query]
 fn total_supply() -> Nat {
-    TOKEN.with(|token| token.borrow().total_supply.clone())
+    TOKEN.with(|token| {
+        // token = RefCell { value: Token { total_supply: 1200, max_supply: 10000, accounts: HashMap { ... } } }
+        token.borrow().total_supply.clone()
+        // This will return 1200
+    })
 }
 
 // This tells us how many tokens are in someone's piggy bank
 #[ic_cdk::query]
 fn balance_of(account: Principal) -> Nat {
     TOKEN.with(|token| {
+        // token = RefCell { value: Token { total_supply: 1200, max_supply: 10000, accounts: HashMap { ... } } }
         token
             .borrow()
             .accounts
             .get(&account)
             .map(|acc| acc.balance.clone())
             .unwrap_or_else(|| Nat::from(0u64))
+        // If "Alice" has a balance of 400, this will return 400
     })
 }
 
@@ -180,5 +218,5 @@ fn generate_candid() {
     candid::export_service!();
 
     std::fs::write("like_erc20_backend.did", __export_service())
-        .expect("Candid interface file likhne mein fail ho gaya");
+        .expect("Failed to write Candid interface file");
 }
